@@ -1,12 +1,12 @@
 #!/bin/bash
 
 load_env() {
-    if [ -f "local.env" ]; then
+    if [ -f "../../local.env" ]; then
         while IFS= read -r line; do
             if [[ ! "$line" =~ ^# && "$line" =~ = ]]; then
                 export "$line"
             fi
-        done < "local.env"
+        done < "../../local.env"
         echo "✅ Loaded environment variables. K8S_PROJECT_NAME=$K8S_PROJECT_NAME"
     else
         echo "⚠️  local.env file not found. Skipping environment loading."
@@ -26,11 +26,23 @@ install_all() {
     echo "🔹 Applying Frontend ApplicationSet..."
     envsubst < 0_argo_fe.yml | kubectl apply -f -
 
+    echo "🔹 Installing Kargo Application..."
+    envsubst < 1_kargo_appproj.yml | kubectl apply -f -
+    envsubst < 1_kargo_be.yml | kubectl apply -f -
+    envsubst < 1_kargo_fe.yml | kubectl apply -f -
+
     echo "✅ Installation completed!"
     echo "-----------------------------------------------"
 }
 
 delete_all() {
+
+    echo "🗑️  Deleting Kargo Applications..."
+    echo "-----------------------------------------------"
+    envsubst < 1_kargo_appproj.yml | kubectl delete -f -
+    envsubst < 1_kargo_be.yml | kubectl delete -f -
+    envsubst < 1_kargo_fe.yml | kubectl delete -f -
+
     echo "🗑️  Deleting ArgoCD Applications..."
     echo "-----------------------------------------------"
 
