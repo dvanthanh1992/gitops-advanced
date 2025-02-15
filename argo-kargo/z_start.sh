@@ -15,40 +15,41 @@ load_env() {
 
 install_all() {
     echo "${K8S_PROJECT_NAME}"
-    echo "🚀 Installing ArgoCD and Kargo Applications..."
     echo "-----------------------------------------------"
 
-    echo "🔹 Installing ArgoCD Application..."
-    envsubst < 0_argo_cd.yml | kubectl apply -f -
+    echo "🔹 Installing ArgoCD Application Project..."
+    envsubst < 0_argo_appproj.yml | kubectl apply -f -
 
-    echo "-----------------------------------------------"
+    echo "🔹 Applying Backend ApplicationSet..."
+    envsubst < 0_argo_be.yml | kubectl apply -f -
 
-    # echo "🔹 Installing Kargo Application..."
-    # envsubst < 1_kargo.yml | kubectl apply -f -
-
-    echo "-----------------------------------------------"
+    echo "🔹 Applying Frontend ApplicationSet..."
+    envsubst < 0_argo_fe.yml | kubectl apply -f -
 
     echo "✅ Installation completed!"
+    echo "-----------------------------------------------"
 }
 
 delete_all() {
-    echo "🗑️  Deleting ArgoCD and Kargo Applications..."
+    echo "🗑️  Deleting ArgoCD Applications..."
     echo "-----------------------------------------------"
 
-    # echo "🔹 Deleting Kargo Application..."
-    # envsubst < 1_kargo.yml | kubectl delete -f -
+    echo "🔹 Deleting Frontend ApplicationSet..."
+    envsubst < 0_argo_fe.yml | kubectl delete -f -
 
+    echo "🔹 Deleting Backend ApplicationSet..."
+    envsubst < 0_argo_be.yml | kubectl delete -f -
+
+    echo "🔹 Deleting ArgoCD Application Project..."
+    envsubst < 0_argo_appproj.yml | kubectl delete -f -
+
+    echo "🔹 Deleting all ArgoCD Applications related to ${K8S_PROJECT_NAME}..."
+    kubectl delete applicationset  --all -n argocd --force --grace-period=0
+    kubectl delete applications    --all -n argocd --force --grace-period=0
+    kubectl delete appprojects     --all -n argocd --force --grace-period=0
+
+    echo "✅ Deletion completed!"
     echo "-----------------------------------------------"
-
-    # echo "🔹 Deleting ArgoCD Application..."
-    # kubectl delete applications    --all -n argocd --force --grace-period=0
-    # kubectl delete applicationsets --all -n argocd --force --grace-period=0
-    # kubectl delete appprojects     --all -n argocd --force --grace-period=0
-    # echo "✅ Deletion completed!"
-
-    sleep 5
-    kubectl get applications -n argocd
-    kubectl get applicationsets -n argocd
 }
 
 usage() {

@@ -1,0 +1,21 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: "${K8S_PROJECT_NAME}"
+  namespace: argocd
+spec:
+  description: "Project for ${K8S_PROJECT_NAME}"
+  clusterResourceWhitelist:
+    - group: "*"
+      kind: Namespace
+  destinations:
+    - name: '*'
+      namespace: "${K8S_PROJECT_NAME}-*"
+      server: "*"
+  namespaceResourceWhitelist:
+    - group: "*"
+      kind: "*"
+  sourceRepos:
+    - "${GH_DEV_URL}"
+    - "${GH_CHART_URL}"
