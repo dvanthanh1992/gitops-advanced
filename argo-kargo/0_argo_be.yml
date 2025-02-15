@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: "${K8S_PROJECT_NAME}"
+  name: "${K8S_PROJECT_NAME}-be"
   namespace: argocd
 spec:
   goTemplate: true
