@@ -1,1 +1,52 @@
 ---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: "${K8S_PROJECT_NAME}"
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - matrix:
+        generators:
+          - git:
+              repoURL: "${GH_DEV_URL}"
+              revision: main
+              directories:
+                - path: cluster/cluster-01/*
+                - path: cluster/cluster-02/*
+          - list:
+              elements:
+                - name: dev
+                  cluster: cluster-01
+                  server: "${K8S_CLUSTER_MGMT}"
+                - name: staging
+                  cluster: cluster-01
+                  server: "${K8S_CLUSTER_MGMT}"
+                - name: prod-hcm
+                  cluster: cluster-02
+                  server: "${K8S_CLUSTER_RS}"
+                - name: prod-hni
+                  cluster: cluster-02
+                  server: "${K8S_CLUSTER_RS}"
+  template:
+    metadata:
+      name: "${K8S_PROJECT_NAME}-{{.name}}-fe"
+      annotations:
+        kargo.akuity.io/authorized-stage: "${K8S_PROJECT_NAME}-{{.name}}-fe"
+    spec:
+      project: "${K8S_PROJECT_NAME}"
+      sources:
+      - repoURL: "${GH_CHART_URL}"
+        targetRevision: main
+        path: thanh-frontend-chart
+        helm:
+          valueFiles:
+            - values-{{.name}}.yml
+      destination:
+        server: "{{.server}}"
+        namespace: "${K8S_PROJECT_NAME}-{{.name}}-fe"
+      syncPolicy:
+        syncOptions:
+          - CreateNamespace=true

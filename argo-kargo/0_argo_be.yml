@@ -20,22 +20,16 @@ spec:
               elements:
                 - name: dev
                   cluster: cluster-01
-                  server: https://kubernetes.default.svc
+                  server: "${K8S_CLUSTER_MGMT}"
                 - name: staging
                   cluster: cluster-01
-                  server: https://kubernetes.default.svc
+                  server: "${K8S_CLUSTER_MGMT}"
                 - name: prod-hcm
                   cluster: cluster-02
-                  server: https://192.168.145.201:16443
+                  server: "${K8S_CLUSTER_RS}"
                 - name: prod-hni
                   cluster: cluster-02
-                  server: https://192.168.145.201:16443
-          # - list:
-          #     elements:
-          #       - cluster: cluster-01
-          #         server: https://kubernetes.default.svc
-          #       - cluster: cluster-02
-          #         server: https://192.168.145.201:16443
+                  server: "${K8S_CLUSTER_RS}"
   template:
     metadata:
       name: "${K8S_PROJECT_NAME}-{{.name}}-be"
@@ -49,7 +43,7 @@ spec:
         path: thanh-backend-chart
         helm:
           valueFiles:
-            - values-{{.name}}.yaml
+            - values-{{.name}}.yml
       destination:
         server: "{{.server}}"
         namespace: "${K8S_PROJECT_NAME}-{{.name}}-be"
