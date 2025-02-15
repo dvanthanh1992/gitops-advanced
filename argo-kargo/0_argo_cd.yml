@@ -1,0 +1,53 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: "${K8S_PROJECT_NAME}"
+  namespace: argocd
+spec:
+  description: "Project for ${K8S_PROJECT_NAME}"
+  clusterResourceWhitelist:
+    - group: "*"
+      kind: Namespace
+  destinations:
+    - name: '*'
+      namespace: "${K8S_PROJECT_NAME}-*"
+      server: "*"
+  namespaceResourceWhitelist:
+    - group: "*"
+      kind: "*"
+  sourceRepos:
+    - "${GH_DEV_URL}"
+    - "${GH_CHART_URL}"
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: "${K8S_PROJECT_NAME}"
+  namespace: argocd
+spec:
+  generators:
+  - git:
+      repoURL: "${GH_DEV_URL}"
+      revision: main
+      directories:
+      - path: cluster/*/*
+  template:
+    metadata:
+      name: "{{path[1]}}-{{path[2]}}-{{path.basename}}"
+    spec:
+      project: "${K8S_PROJECT_NAME}"
+      sources:
+      - repoURL: "${GH_CHART_URL}"
+        targetRevision: main
+        path: thanh-demo-app-py-chart
+        helm:
+          valueFiles:
+            - cluster/{{path[1]}}/{{path[2]}}/values-{{path.basename}}.yml
+      destination:
+        server: "{{ if eq path[1] `cluster-01` }}https://kubernetes.default.svc{{ else if eq path[1] `cluster-02` }}https://192.168.145.201:16443{{ else }}{{ fail `Unknown cluster` }}{{ end }}"
+        namespace: "{{path[1]}}-{{path[2]}}-{{path.basename}}"
+      syncPolicy:
+        syncOptions:
+          - CreateNamespace=true
