@@ -34,7 +34,7 @@ spec:
     metadata:
       name: "${K8S_PROJECT_NAME}-{{.name}}-be"
       annotations:
-        kargo.akuity.io/authorized-stage: "${K8S_PROJECT_NAME}-{{.name}}-be"
+        kargo.akuity.io/authorized-stage: "${K8S_PROJECT_NAME}:{{.name}}-be"
     spec:
       project: "${K8S_PROJECT_NAME}"
       sources:
@@ -48,11 +48,5 @@ spec:
         server: "{{.server}}"
         namespace: "${K8S_PROJECT_NAME}-{{.name}}-be"
       syncPolicy:
-        automated:
-          prune: true
-          selfHeal: true
         syncOptions:
           - CreateNamespace=true
-          - Validate=true
-          - PruneLast=true
-          - PrunePropagationPolicy=foreground

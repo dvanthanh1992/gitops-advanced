@@ -34,7 +34,7 @@ spec:
     metadata:
       name: "${K8S_PROJECT_NAME}-{{.name}}-fe"
       annotations:
-        kargo.akuity.io/authorized-stage: "${K8S_PROJECT_NAME}-{{.name}}-fe"
+        kargo.akuity.io/authorized-stage: "${K8S_PROJECT_NAME}:{{.name}}-fe"
     spec:
       project: "${K8S_PROJECT_NAME}"
       sources:
