@@ -7,7 +7,7 @@ env:
   APP_NAME: "BACKEND APPLICATION"
 
 image:
-  repository: 192.168.145.182/kargo/backend-app
+  repository: 192.168.145.112/kargo/backend-app
   pullPolicy: IfNotPresent
   tag: 5.0.0
 
