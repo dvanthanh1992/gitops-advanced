@@ -2,8 +2,8 @@
 
 HARBOR_URL="192.168.145.112"
 PROJECT="kargo"
-USERNAME="admin"
-PASSWORD="admin"
+USERNAME="..."
+PASSWORD="..."
 REPOSITORIES=("backend-app" "frontend-app" "demo-app")
 
 get_image_tags() {
