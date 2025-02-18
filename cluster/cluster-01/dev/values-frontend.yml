@@ -9,7 +9,7 @@ env:
 image:
   repository: 192.168.145.112/kargo/frontend-app
   pullPolicy: IfNotPresent
-  tag: 5.0.0
+  tag: 4.0.0
 
 service:
   type: LoadBalancer
